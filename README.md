@@ -1,10 +1,72 @@
 # Subculture
 
-A microbiology and biotechnology study resource — 19 organism profiles, 15 laboratory
-methods, 8 calculators, interactive 3D models, rendered micrographs and a virus culture
-simulation.
+**From the organism to the bioreactor.** A microbiology and biotechnology study resource
+for students: each pathogen and each lab method is taken apart the same way, covering the
+biology, the bench procedure and the reasoning behind every step.
 
 Designed, written and built by **Aashir Shaikh**.
+
+![Subculture home page](docs/screenshots/home.png)
+
+| 19 | 15 | 10 | 8 | 21 |
+|:-:|:-:|:-:|:-:|:-:|
+| organism profiles | laboratory methods | staining protocols | calculators | rendered micrographs |
+
+It is a single static page: no build step, no framework and no backend.
+
+---
+
+## What's inside
+
+### Organism profiles
+
+Viruses, bacteria, fungi and parasites, each with the same structure: classification and
+history, structure and genome, replication or life cycle, transmission, pathogenesis,
+clinical stages, diagnosis, treatment and drug targets, and prevention.
+
+| Viruses | Bacteria | Parasites and fungi |
+|---|---|---|
+| HIV, COVID-19, influenza, hepatitis B, hepatitis C, dengue, rabies, measles, Ebola, Nipah | Tuberculosis, cholera, typhoid, *S. aureus*, *S. pyogenes*, *H. pylori* | Malaria, Leishmania, Candida |
+
+### Interactive 3D models
+
+Every organism has a parametric three.js model. You can drag it to rotate and switch
+layers off one at a time to see what is inside, such as the envelope, spikes, capsid and genome.
+
+![3D model of HIV with toggleable layers](docs/screenshots/model-3d.png)
+
+### Rendered micrographs
+
+Each micrograph shows how the organism actually looks under its stain: illumination
+falloff, depth of field, stain granularity and a scale bar. They are drawn
+procedurally in canvas, not photographed, and every caption says so.
+
+![Ziehl–Neelsen stain of M. tuberculosis in sputum](docs/screenshots/micrograph.png)
+
+### Lab methods and staining protocols
+
+The methods cover culture, susceptibility testing, biochemical ID, sterilisation, growth curves,
+biosafety, nucleic acid extraction, PCR, gels, cloning, ELISA, sequencing, protein
+expression, CRISPR and fermentation. Each of the 10 staining protocols lists reagents with
+their recipes, timed steps, the reason behind each step and common pitfalls.
+
+![Ziehl–Neelsen staining protocol](docs/screenshots/stain-protocol.png)
+
+### Calculators
+
+The site has 8 working calculators for the arithmetic done at the bench: viable count (CFU/mL),
+generation time, C₁V₁ = C₂V₂ dilutions, nucleic acid concentration and purity, primer
+Tm (nearest-neighbour), malaria parasite density and more. Each one shows its formula
+and flags values that should make you stop, such as a plate outside the countable range.
+
+![Calculators](docs/screenshots/calculators.png)
+
+### Also included
+
+- **HIV culture simulation**: a small lab game in which you grow a virus stock in PBMC culture.
+- **Outbreak watch**: dated snapshots of current outbreaks, each linked to its source.
+- **Search** across organisms, diseases, techniques and terms, for example "acid-fast", "Widal" or "kLa".
+- **151 cited sources**, linked from the figures and statistics that use them.
 
 ---
 
@@ -20,7 +82,8 @@ python3 -m http.server 8000
 ```
 
 An internet connection is required on first load, for three.js and the Google Fonts
-stylesheet. Everything else is generated in code — there are no image or data files.
+stylesheet. Everything else is generated in code. The site uses no image or data files,
+and the PNGs in `docs/screenshots/` are only for this README.
 
 `index.html` is the source that gets published to the Claude Artifact platform, which
 supplies the `<!doctype>`, `<html>`, `<head>` and `<body>` wrapper itself. That is why
@@ -124,3 +187,13 @@ reference it with `{t:'micro', kind:'your-key'}`.
 The written content and code are Aashir Shaikh's own work. Cited sources (WHO, CDC,
 EUCAST, CLSI and others) are linked, not reproduced. No third-party images are included,
 which is why every figure is drawn rather than copied.
+
+---
+
+## Contact
+
+Questions, corrections or ideas are welcome. Microbiology content goes out of date, and if
+you spot an error I'd like to fix it.
+
+- **Email:** [stu.yasir456@gmail.com](mailto:stu.yasir456@gmail.com)
+- **GitHub:** [open an issue](https://github.com/aashirshaikh1/subculture/issues)
