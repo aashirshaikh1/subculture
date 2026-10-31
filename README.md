@@ -195,5 +195,5 @@ which is why every figure is drawn rather than copied.
 Questions, corrections or ideas are welcome. Microbiology content goes out of date, and if
 you spot an error I'd like to fix it.
 
-- **Email:** [stu.yasir456@gmail.com](mailto:stu.yasir456@gmail.com)
+- **Email:** [aashirshaikh2004@gmail.com](mailto:aashirshaikh2004@gmail.com)
 - **GitHub:** [open an issue](https://github.com/aashirshaikh1/subculture/issues)
