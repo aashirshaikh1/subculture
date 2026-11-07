@@ -1,0 +1,16 @@
+[project]
+name = "subculture_site"
+authors = [
+    { name = "Aashir Shaikh", email = "aashirshaikh2004@gmail.com" }
+]
+description = "Subculture, a microbiology and biotechnology study site, served by Frappe"
+requires-python = ">=3.14"
+readme = "README.md"
+dynamic = ["version"]
+dependencies = [
+    # "frappe~=16.0.0" # Installed and managed by bench.
+]
+
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"

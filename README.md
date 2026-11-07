@@ -94,6 +94,14 @@ wrapper added. Regenerate it after editing `index.html`:
 python3 build-local.py
 ```
 
+**Served by Frappe.** `frappe_app/subculture_site` is a small Frappe app that serves this site
+at `/subculture`, alongside the author's other work on one site. It holds no content of its
+own: `sync.py` copies `local.html` and the scripts into it. Run it after `build-local.py`:
+
+```bash
+python3 frappe_app/subculture_site/sync.py
+```
+
 ---
 
 ## The files

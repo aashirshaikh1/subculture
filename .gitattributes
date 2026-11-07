@@ -1,0 +1,13 @@
+# Binary files must never have their line endings rewritten. On Windows, core.autocrlf would
+# otherwise turn LF into CRLF inside an image on checkout and corrupt it.
+*.png -text
+*.jpg -text
+*.svg  text eol=lf
+*.html text eol=lf
+*.js   text eol=lf
+*.py   text eol=lf
+*.md   text eol=lf
+*.toml text eol=lf
+*.txt  text eol=lf
+.gitattributes text eol=lf
+.gitignore     text eol=lf

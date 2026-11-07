@@ -1,0 +1,6 @@
+app_name = "subculture_site"
+app_title = "Subculture"
+app_publisher = "Aashir Shaikh"
+app_description = "Subculture, a microbiology and biotechnology study site, served at /subculture"
+app_email = "aashirshaikh2004@gmail.com"
+app_license = "mit"
