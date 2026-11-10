@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Subculture">
+  <!-- Subculture, bold cut: the petri dish fills the tile, lid catching the light top left,
+       colonies grown across the agar. -->
+  <defs>
+    <linearGradient id="scb-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E0479A"/><stop offset="0.5" stop-color="#B02463"/>
+      <stop offset="1" stop-color="#5E0E3F"/>
+    </linearGradient>
+    <linearGradient id="scb-lid" x1="0.1" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.15"/>
+    </linearGradient>
+    <linearGradient id="scb-agar" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#F3E2EC"/>
+    </linearGradient>
+    <radialGradient id="scb-c1" cx="0.33" cy="0.28" r="0.9">
+      <stop offset="0" stop-color="#D9519A"/><stop offset="1" stop-color="#9C1A66"/>
+    </radialGradient>
+    <radialGradient id="scb-c2" cx="0.33" cy="0.28" r="0.9">
+      <stop offset="0" stop-color="#F994BC"/><stop offset="1" stop-color="#DE5C93"/>
+    </radialGradient>
+    <radialGradient id="scb-c3" cx="0.33" cy="0.28" r="0.9">
+      <stop offset="0" stop-color="#E86FA8"/><stop offset="1" stop-color="#BE2E7C"/>
+    </radialGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#scb-bg)"/>
+  <rect x="0.6" y="0.6" width="62.8" height="62.8" rx="14.4" fill="none" stroke="#FFFFFF" stroke-opacity="0.26"/>
+  <circle cx="32" cy="32" r="26" fill="url(#scb-lid)"/>
+  <circle cx="32" cy="32" r="23" fill="url(#scb-agar)"/>
+  <circle cx="23.6" cy="24.4" r="6.4" fill="url(#scb-c1)"/>
+  <circle cx="40.8" cy="26.4" r="4" fill="url(#scb-c2)"/>
+  <circle cx="36" cy="40.8" r="5.4" fill="url(#scb-c3)"/>
+  <circle cx="22" cy="39.6" r="3" fill="#EE86AE"/>
+  <circle cx="31" cy="31.6" r="1.9" fill="#F5A7C6"/>
+</svg>
