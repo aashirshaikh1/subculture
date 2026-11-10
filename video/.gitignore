@@ -1,0 +1,6 @@
+node_modules/
+out/
+# stems: regenerate with scripts/make_audio.py
+public/audio/voice.wav
+public/audio/music.wav
+public/audio/sfx.wav

@@ -1,0 +1,19 @@
+{
+  "name": "subculture-launch-video",
+  "private": true,
+  "description": "Launch film for Subculture, made with Remotion.",
+  "scripts": {
+    "studio": "remotion studio src/index.jsx",
+    "render": "remotion render src/index.jsx SubcultureLaunch out/subculture-launch.mp4",
+    "still": "remotion still src/index.jsx SubcultureLaunch out/still.png"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "@fontsource/newsreader": "^5.2.5",
+    "@remotion/cli": "^4.0.539",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.539"
+  }
+}
