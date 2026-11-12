@@ -1,9 +1,12 @@
 """Soundtrack for the Subculture launch film: voice-over, music and sound effects.
 
-    python video/scripts/make_audio.py --voice path/to/en_US-lessac-medium.onnx
+    python video/scripts/make_audio.py --voice en-IN-NeerjaExpressiveNeural
+    python video/scripts/make_audio.py --voice path/to/en_GB-cori-high.onnx   (offline)
 
-Needs numpy and piper-tts (a free neural text-to-speech engine that runs
-offline; voice models from https://huggingface.co/rhasspy/piper-voices).
+A voice name uses Microsoft's neural voices through edge-tts (pip install edge-tts;
+needs internet while generating). A .onnx path uses piper-tts, a free neural
+text-to-speech engine that runs offline (voices from https://huggingface.co/rhasspy/piper-voices).
+Both need numpy.
 Everything else is synthesised here, so there are no third-party music or
 sound files. Writes video/public/audio/soundtrack.wav (used by the film) and
 the stems voice.wav, music.wav and sfx.wav for editing elsewhere.
@@ -43,7 +46,7 @@ SCENES = [0, 6, 9.5, 15.5, 23, 30, 37.5, 44.5, 51.5, 58, 62.5]
 # (start, line, latest end): every line ends before the next headline appears.
 # Silent during the opening gag, clicks and montage, so the effects carry them.
 SCRIPT = [
-    (0.40, "A textbook tells you what it is. A manual tells you what to do. Neither tells you why.", 5.80),
+    (0.15, "A textbook tells you what it is. A manual tells you what to do. Neither tells you why.", 5.80),
     (6.30, "This is Subculture.", 9.10),
     (9.90, "Nineteen organisms and fifteen lab methods, every one taken apart the same way.", 15.10),
     (15.90, "Each organism gets the same sections. The biology, the bench work, and the reason behind each step.", 22.60),
@@ -408,33 +411,77 @@ def sfx() -> np.ndarray:
 
 
 # ---------------------------------------------------------------- voice
-def voice(model: Path) -> tuple[np.ndarray, list[tuple[float, float]]]:
+FFMPEG = Path(__file__).resolve().parents[1] / "node_modules" / "@remotion" / "compositor-win32-x64-msvc" / "ffmpeg.exe"
+
+
+def piper_engine(model: str):
+    """Offline Piper voice from a .onnx model."""
     from piper import PiperVoice, SynthesisConfig
 
-    v = PiperVoice.load(str(model))
+    v = PiperVoice.load(model)
+
+    def say(line: str, scale: float) -> tuple[np.ndarray, int]:
+        mem = io.BytesIO()
+        with wave.open(mem, "wb") as wf:
+            v.synthesize_wav(line, wf, syn_config=SynthesisConfig(length_scale=scale))
+        mem.seek(0)
+        with wave.open(mem, "rb") as wf:
+            return np.frombuffer(wf.readframes(wf.getnframes()), dtype=np.int16).astype(np.float64) / 32768, wf.getframerate()
+
+    return say
+
+
+def edge_engine(name: str):
+    """Microsoft neural voice such as en-IN-NeerjaExpressiveNeural (needs internet while generating)."""
+    import asyncio
+    import subprocess
+    import tempfile
+
+    import edge_tts
+
+    def say(line: str, scale: float) -> tuple[np.ndarray, int]:
+        rate = f"{round((1 / scale - 1) * 100):+d}%"
+        with tempfile.TemporaryDirectory() as tmp:
+            mp3, wav = Path(tmp) / "line.mp3", Path(tmp) / "line.wav"
+            for _ in range(4):  # the service can stall: give each try 30 s
+                try:
+                    asyncio.run(asyncio.wait_for(edge_tts.Communicate(line, name, rate=rate).save(str(mp3)), 30))
+                    break
+                except Exception as e:
+                    print(f"  retrying ({type(e).__name__})", flush=True)
+            else:
+                raise RuntimeError(f"voice service failed four times on: {line}")
+            # Remotion's ffmpeg build cannot write to a pipe, so decode file to file
+            subprocess.run([str(FFMPEG), "-loglevel", "error", "-y", "-i", str(mp3), "-ac", "1", "-ar", str(SR), str(wav)], check=True)
+            with wave.open(str(wav), "rb") as wf:
+                return np.frombuffer(wf.readframes(wf.getnframes()), dtype=np.int16).astype(np.float64) / 32768, wf.getframerate()
+
+    return say
+
+
+def voice(name: str) -> tuple[np.ndarray, list[tuple[float, float]]]:
+    piper = name.endswith(".onnx")
+    say = piper_engine(name) if piper else edge_engine(name)
+    # a neural voice sounds rushed above about 1.15x, so it gets less room to speed up than Piper
+    fastest, step = (0.8, 0.05) if piper else (0.87, 0.03)
     buf = track()
     spans = []
     for start, line, latest in SCRIPT:
         slot = latest - start
         scale = 1.0
         for _ in range(6):  # speak a little faster until the line fits its slot
-            mem = io.BytesIO()
-            with wave.open(mem, "wb") as wf:
-                v.synthesize_wav(line, wf, syn_config=SynthesisConfig(length_scale=scale))
-            mem.seek(0)
-            with wave.open(mem, "rb") as wf:
-                rate = wf.getframerate()
-                pcm = np.frombuffer(wf.readframes(wf.getnframes()), dtype=np.int16).astype(np.float64) / 32768
+            pcm, rate = say(line, scale)
             pcm = np.trim_zeros(np.where(np.abs(pcm) < 0.003, 0, pcm)) if np.any(np.abs(pcm) >= 0.003) else pcm
             dur = len(pcm) / rate
-            if dur <= slot or scale <= 0.8:
+            if dur <= slot or scale <= fastest:
                 break
-            scale -= 0.05
+            scale -= step
         # resample to 44.1 kHz by linear interpolation
         x = np.interp(np.arange(int(len(pcm) * SR / rate)) * rate / SR, np.arange(len(pcm)), pcm)
         add(buf, x, start)
         spans.append((start, start + len(x) / SR))
-        print(f"{start:6.2f}-{start + len(x) / SR:6.2f} s (slot to {latest:5.2f}, speed {1 / scale:.2f}x)  {line}")
+        over = "  OVER SLOT" if start + len(x) / SR > latest + 0.05 else ""
+        print(f"{start:6.2f}-{start + len(x) / SR:6.2f} s (slot to {latest:5.2f}, speed {1 / scale:.2f}x){over}  {line}", flush=True)
     return buf, spans
 
 
@@ -459,7 +506,7 @@ def write(path: Path, x: np.ndarray) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--voice", type=Path, required=True, help="a Piper .onnx voice model")
+    ap.add_argument("--voice", required=True, help="a Microsoft neural voice name, or a Piper .onnx voice model")
     args = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
 
@@ -475,8 +522,9 @@ def main() -> None:
     duck = np.ones_like(mu)
     for a, b in spans:
         duck[t(a - 0.15):t(b + 0.25)] = db(DUCK_DB)
-    k = t(0.12)
-    duck = np.convolve(duck, np.ones(k) / k, mode="same")
+    k = t(0.12)  # same moving average as np.convolve(mode="same"), but via a cumulative sum: far faster
+    c = np.concatenate([[0.0], np.cumsum(np.pad(duck, (k // 2, (k - 1) // 2)))])
+    duck = (c[k:] - c[:-k]) / k
     mu *= duck
     # fade the music out over the last half second
     mu[t(LENGTH - 0.5):t(LENGTH)] *= np.linspace(1, 0, t(LENGTH) - t(LENGTH - 0.5))
