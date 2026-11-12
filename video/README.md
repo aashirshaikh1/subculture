@@ -11,10 +11,13 @@ as React code).
 ```powershell
 cd video
 npm install
-# soundtrack: voice-over (Piper, offline neural TTS), synthesised music and sound effects
-pip install piper-tts numpy
-python -m piper.download_voices en_GB-cori-high
-python scripts/make_audio.py --voice en_GB-cori-high.onnx
+# soundtrack: Indian English voice-over (Microsoft neural voice, needs internet while
+# generating), synthesised music and sound effects
+pip install edge-tts numpy
+python scripts/make_audio.py --voice en-IN-NeerjaExpressiveNeural
+# male voice: --voice en-IN-PrabhatNeural
+# offline instead: pip install piper-tts, python -m piper.download_voices en_GB-cori-high,
+#   then --voice en_GB-cori-high.onnx
 # preview in the browser, or render the MP4 (1920x1080, 60 fps, about 10 minutes)
 npm run studio
 npm run render
