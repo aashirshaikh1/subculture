@@ -22,6 +22,18 @@ REPO = os.path.dirname(os.path.dirname(HERE))
 PKG = os.path.join(HERE, "subculture_site")
 ASSETS = "/assets/subculture_site"
 
+# Google Analytics 4 measurement ID of the aashirshaikh.in data stream (property for the
+# portfolio site). Only the Frappe copy carries the tag: the standalone site in the
+# repository root must not phone home.
+GA_TAG = """<script async src="https://www.googletagmanager.com/gtag/js?id=G-5ZCTQLX79V"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag("js", new Date());
+  gtag("config", "G-5ZCTQLX79V");
+</script>
+"""
+
 # link back to the author's portfolio, the front page of the same Frappe site
 HOME_LINK_CSS = (
     ".home-link{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.06em;\n"
@@ -59,6 +71,8 @@ def main() -> None:
     html = add_home_link(html)
     # The browser tab icon. The standalone site has no <head> of its own to put one in.
     html = replace_once(html, "<title>", f'<link rel="icon" href="{ASSETS}/icon.svg">\n<title>')
+    # The analytics tag goes in <head>, which the generated page does have.
+    html = replace_once(html, "</head>", GA_TAG + "</head>")
     if "{% endraw" in html:
         raise SystemExit("sync.py: local.html contains {% endraw %}, which would break the page")
     # A full document (it has </body>), so Frappe adds no layout of its own; {% raw %} keeps
